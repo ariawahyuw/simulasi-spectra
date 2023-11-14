@@ -12,12 +12,22 @@ class CovarianceMatrix:
     def getEigenvectors(self):
         return self.eigenvectors
     def setEigenvalues(self, eigenvalues):
+        assert np.iscomplex(eigenvalues).any() == False, "Eigenvalues must be real"
         self.eigenvalues = eigenvalues
     def setEigenvectors(self, eigenvectors):
+        assert np.iscomplex(eigenvectors).any() == False, "Eigenvectors must be real"
         self.eigenvectors = eigenvectors
     def calculateEigen(self):
-        self.eigenvalues, self.eigenvectors = np.linalg.eig(self.C)
+        eig_vals, eig_vecs = np.linalg.eig(self.C)
+        if np.iscomplex(eig_vals).any():
+            complex_idx = np.where(np.iscomplex(eig_vals))[0]
+            eig_vals = np.delete(eig_vals, complex_idx)
+            eig_vecs = np.delete(eig_vecs, complex_idx, axis=1)
+            eig_vals, eig_vecs = np.real(eig_vals), np.real(eig_vecs)
+        self.eigenvalues, self.eigenvectors = eig_vals, eig_vecs
     def setMinEigenVal(self, val):
+        assert isinstance(val, (int, float)), "Eigenvalue must be a number"
+        assert val >= 0, "Eigenvalue must be positive"
         self.eigenvalues[self.eigenvalues < val] = 0.
         self.eigenvectors[:, self.eigenvalues < val] = 0.
 
