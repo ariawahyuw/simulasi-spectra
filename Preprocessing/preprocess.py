@@ -55,3 +55,13 @@ def split_data(data, name, path, subpath, first_idx=1804.50391):
             if os.path.exists(path + name + subpath + str(k+1)) == False:
                 os.mkdir(path + name + subpath + str(k+1))
             file.to_csv(path + name + subpath + str(k+1) + '/' + str(i+1) + '.txt', index=None, header=None, sep='\t')
+        
+def read_data(path, file_name=''):
+    # Get all files in the folder
+    files = os.listdir(path)
+    # Read all files
+    data = []
+    for file in files:
+        if file.endswith('.txt') and file.startswith(file_name):
+            data.append(np.genfromtxt(path + file, delimiter='\t'))
+    return data
